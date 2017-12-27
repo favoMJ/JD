@@ -21,9 +21,15 @@ class JDItem(Item):
     specification = scrapy.Field()
     introduction = scrapy.Field()
     item_price = scrapy.Field()
-    comment_count = scrapy.Field()
-    comment_goodrate = scrapy.Field()
+    commentsCount = scrapy.Field()
 
     #爬虫模块，名字
+    crawled = scrapy.Field()
+    spider = scrapy.Field()
+
+class CommentItem(Item):
+    comment = scrapy.Field()
+    comment_product = scrapy.Field()
+    # 爬虫模块，名字
     crawled = scrapy.Field()
     spider = scrapy.Field()

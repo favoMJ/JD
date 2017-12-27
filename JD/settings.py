@@ -17,7 +17,7 @@ NEWSPIDER_MODULE = 'JD.spiders'
 DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 SCHEDULER_PERSIST = True
-
+REDIS_URL = 'redis://favomj:favomj@47.94.141.99:6379'
 DOWNLOAD_DELAY = 0
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
@@ -26,10 +26,10 @@ ITEM_PIPELINES = {
      'scrapy_redis.pipelines.RedisPipeline': 400,
 }
 
-LOG_LEVEL = 'INFO'
-DEPTH_PRIORITY = 1
-SCHEDULER_DISK_QUEUE = 'scrapy.squeue.PickleFifoDiskQueue'
-SCHEDULER_MEMORY_QUEUE = 'scrapy.squeue.FifoMemoryQueue'
+# LOG_LEVEL = 'INFO'
+# DEPTH_PRIORITY = 1
+# SCHEDULER_DISK_QUEUE = 'scrapy.squeue.PickleFifoDiskQueue'
+# SCHEDULER_MEMORY_QUEUE = 'scrapy.squeue.FifoMemoryQueue'
 # LOG_FILE = r'C:\Users\favomj\Desktop\1.log'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

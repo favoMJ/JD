@@ -7,7 +7,7 @@ import logging
 from scrapy_redis.spiders import RedisSpider
 from JD.items import JDItem
 
-class Crawl_JD(RedisSpider):
+class JDSpider(RedisSpider):
     name = 'crawl_JD'
     allowed_domains = ["jd.com",
                        "3.cn"]
@@ -24,7 +24,7 @@ class Crawl_JD(RedisSpider):
         'USER_AGENT':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36',
     }
 
-    # start_urls=['https://www.jd.com/']
+    # start_urls=['lpush crwal_jd:start_url https://www.jd.com']
     def parse(self, response):
         logging.log(logging.WARNING, "first url %s" % response.url)
         names = response.xpath('//ul[@class="JS_navCtn cate_menu"]//a/text()').extract()
@@ -115,20 +115,17 @@ class Crawl_JD(RedisSpider):
         elif 'pcp' in js:
             item['item_price'] = js['pcp']
         comment_sum = 'https://club.jd.com/comment/productCommentSummaries.action?referenceIds=%s' % (response.meta['each_id'])
-        print(item)
-        yield scrapy.Request(comment_sum, meta={'item': item}, callback=self.jd_comment)
+        yield scrapy.Request(comment_sum, meta={'item': item}, callback=self.jd_comments_count)
 
-    def jd_comment(self,response):
+    def jd_comments_count(self,response):
         logging.log(logging.WARNING, "comment url %s" % response.url)
         item = response.meta['item']
         if response.status != 200:
             return
         js = response.body.decode('gbk').encode('utf8').decode('utf8')
         js = json.loads(js)
-        item['comment_count'] = js['CommentsCount'][0]['CommentCountStr']
-        item['comment_goodrate'] = js['CommentsCount'][0]['GoodRate']
-        print(item)
-        yield item
+        item['commentsCount'] = js['CommentsCount'][0]
+        # yield item
 
     def get_name(self,response):
         return response.xpath('//a/text()').extract()
