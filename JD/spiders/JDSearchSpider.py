@@ -4,7 +4,7 @@ import scrapy
 import logging
 
 from scrapy_redis.spiders import RedisSpider
-
+from JD.conf import config
 from JD.items import JDItem, CommentItem
 
 
@@ -12,12 +12,18 @@ class JDSearchSpider(RedisSpider):
     name = 'crawl_jd_search'
     allowed_domains = ["jd.com",
                        "3.cn"]
-    #每一页评论个数
-    COMMENT_PAGESIZE = 10
-    #list页数限制
-    SEARCH_PAGE = 1
-    #评论总页数
-    totalpage = 10
+    # 读取APP配置文件
+    app_conf = config.configs['JD']
+    comment_pagesize = app_conf['comment_pagesize']
+    search_page = app_conf['search_page']
+    comment_page = app_conf['comment_page']
+    
+    # #每一页评论个数
+    # comment_pagesize = 10
+    # #list页数限制
+    # search_page = 1
+    # #评论总页数
+    # comment_page = 10
 
     redis_key = 'crawl_jd_search:start_url'
 
@@ -35,7 +41,7 @@ class JDSearchSpider(RedisSpider):
             url = li.xpath("div/div[@class='p-img']/a/@href").extract_first()
             url = self.deal_src(url)
             yield scrapy.Request(url, callback='jd_shop_parse')
-        if int(pageno) < JDSearchSpider.SEARCH_PAGE:
+        if int(pageno) < JDSearchSpider.search_page:
             url = self.change_pageno(response.url,pageno)
             yield scrapy.Request(url=url,  callback=self.parse)
 
@@ -68,24 +74,23 @@ class JDSearchSpider(RedisSpider):
     #迭代解析评论
     def jd_comment(self,response):
         item = response.meta['item']
-        print(item)
         pageno = response.url.split('&')[-2].split('=')[1]
         try:
             body = response.body
             bjson = json.loads(body.decode('gbk'))
             commentsummary = bjson['productCommentSummary']
-            if JDSearchSpider.totalpage == 0:
+            if JDSearchSpider.comment_page == 0:
                 #获取总记录数
-                JDSearchSpider.totalpage = int(commentsummary['commentCount'] / JDSearchSpider.COMMENT_PAGESIZE)
+                JDSearchSpider.comment_page = int(commentsummary['commentCount'] / JDSearchSpider.comment_pagesize)
             for comment in bjson['comments']:
                 citem = CommentItem()
-                citem['comment_product'] = item['item_id']
+                citem['item_id'] = item['item_id']
                 citem['comment_product'] = item['item_name']
                 citem['comment'] = comment
                 yield citem
         except:
             print('解析发生了异常')
-        if int(pageno) < JDSearchSpider.totalpage:
+        if int(pageno) < JDSearchSpider.comment_page:
             url = self.change_pageno(response.url,pageno)
             yield scrapy.Request(url=url, meta={'item': item }, callback='jd_comment')
 

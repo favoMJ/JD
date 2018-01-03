@@ -29,6 +29,7 @@ class JDItem(Item):
 
 class CommentItem(Item):
     comment = scrapy.Field()
+    item_id = scrapy.Field()
     comment_product = scrapy.Field()
     # 爬虫模块，名字
     crawled = scrapy.Field()
