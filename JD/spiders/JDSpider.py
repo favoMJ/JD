@@ -7,17 +7,12 @@ import logging
 from scrapy_redis.spiders import RedisSpider
 from JD.items import JDItem
 
+
 class JDSpider(RedisSpider):
     name = 'crawl_JD'
     allowed_domains = ["jd.com",
                        "3.cn"]
     redis_key = 'crwal_jd:start_url'
-
-    # def __init__(self, *args, **kwargs):
-    #     # Dynamically define the allowed domains list.
-    #     domain = kwargs.pop('domain', '')
-    #     self.allowed_domains = filter(None, domain.split(','))
-    #     super(Crawl_JD, self).__init__(*args, **kwargs)
 
     custom_settings = {
         'ROBOTSTXT_OBEY': False,
@@ -153,5 +148,3 @@ class JDSpider(RedisSpider):
         if len(res):
             return res[0]
         return None
-
-
