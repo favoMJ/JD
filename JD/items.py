@@ -22,6 +22,7 @@ class JDItem(Item):
     introduction = scrapy.Field()
     item_price = scrapy.Field()
     commentsCount = scrapy.Field()
+    keyname = scrapy.Field()
 
     #爬虫模块，名字
     crawled = scrapy.Field()
@@ -31,6 +32,18 @@ class CommentItem(Item):
     comment = scrapy.Field()
     item_id = scrapy.Field()
     comment_product = scrapy.Field()
+    keyname = scrapy.Field()
+    # 爬虫模块，名字
+    crawled = scrapy.Field()
+    spider = scrapy.Field()
+
+
+class CSDN_Item(Item):
+    postdate = scrapy.Field()
+    title = scrapy.Field()
+    content = scrapy.Field()
+    type = scrapy.Field()
+    keyname = scrapy.Field()
     # 爬虫模块，名字
     crawled = scrapy.Field()
     spider = scrapy.Field()
