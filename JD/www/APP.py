@@ -1,5 +1,6 @@
 from flask import Flask, request
 from JD.conf import config
+from JD.spiders import JDSearchSpider
 
 from JD.www.RedisControl import RedisControl
 
@@ -22,10 +23,11 @@ pagesize = app_conf['pagesize']
 '''
 @app.route('/search/jd',methods=['GET','POST'])
 def search_shop():
+    JDSearchSpider.keyname  = ''
     shopname = request.args.get('name')
     url = 'https://search.jd.com/Search?keyword=%s&page=1'%(shopname)
     # 初始化redis ，mysql中有关数据，防止爬虫因为去重启动错误 和 数据重复
-    redisControl.redis_mysql_init(jd_search_redis_name)
+    # redisControl.redis_mysql_init(jd_search_redis_name)
     # 开始爬取
     redisControl.lpush_start_url(redisname=jd_search_redis_name,url=url)
     return ""
@@ -35,13 +37,14 @@ def search_shop():
     京东商品列表换页
     get 请求中包含页号
 '''
-@app.route('/search/jd/shoplist',methods=['GET'])
+@app.route('/search/jd/shoplist/',methods=['GET'])
 def jd_shoplist_page_change():
+    shopname = request.args.get('shopname')
     page = request.args.get('page')
-    print(page)
+
     startno = (int(page)-1)*pagesize
     # 获取页面内容并返回
-    info = redisControl.jd_item(startno=startno,pagesize=pagesize)
+    info = redisControl.jd_item(shopname,startno=startno,pagesize=pagesize)
     return info
 
 
@@ -52,9 +55,10 @@ def jd_shoplist_page_change():
 @app.route('/search/jd/comment',methods=['GET'])
 def jd_comment_page_change():
     page = request.args.get('page')
+    shopname = request.args.get('shopname')
     startno = (int(page)-1)*pagesize
     # 获取页面内容并返回
-    info = redisControl.jd_comment(startno=startno,pagesize=pagesize)
+    info = redisControl.jd_comment(shopname,startno=startno,pagesize=pagesize)
     return info
 
 

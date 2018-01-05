@@ -1,14 +1,18 @@
 import json
 import logging
 
-import pymysql
+import pymongo
 import redis
-import pymysql.cursors
 
 Redis_conn = redis.StrictRedis(host='47.94.141.99', port=6379, password='favomj', db=0)
-MySql_conn = pymysql.connect(host='47.94.141.99', user='out', passwd='123456', port=3306, db='crawl',
-                             charset='utf8', cursorclass=pymysql.cursors.DictCursor)
 
+r = redis.StrictRedis(host='47.94.141.99', port=6379, password='favomj', db='0')
+
+client = pymongo.MongoClient(host='47.94.141.99', port=27017)
+
+db = client['test']
+
+db.authenticate("out", "out")
 
 class RedisControl(object):
 
@@ -43,13 +47,13 @@ class RedisControl(object):
 
 
     #获取京东商品数据
-    def jd_item(self,startno,pagesize):
+    def jd_item(self,shopname ,startno,pagesize):
         try:
-            cur = MySql_conn.cursor()
-            cur.execute('select item_id,item_name,introduction,item_price,src from jd_search_shop limit %s ,%s'%(startno,pagesize))
-            info = cur.fetchall()
-            cur.close()
-            info = json.dumps(info,ensure_ascii=False)
+            jd_product = db['jd_product:' + shopname]
+            info = jd_product.find({},{"item_id":1,"item_name" :1, 'introduction' : 1 , 'item_price': 1 , 'src' : 1 , "_id":0}).limit(pagesize).skip(startno)
+            # info = json.dumps(info,ensure_ascii=False)
+            print(info.count())
+            info = json.dumps(list(info),ensure_ascii=False)
             print(info)
             return info
         except Exception as e:
@@ -57,21 +61,20 @@ class RedisControl(object):
             print('mysql jd_item error')
 
     # 获取京东商品评论
-    def jd_comment(self,startno,pagesize):
+    def jd_comment(self,shopname,startno,pagesize):
         try:
-            cur = MySql_conn.cursor()
-            cur.execute('select * from jd_comment limit %s ,%s'%(startno,pagesize))
-            info = cur.fetchall()
-            cur.close()
-            info = json.dumps(info, ensure_ascii=False)
+            jd_product = db['jd_product:' + shopname]
+            info = jd_product.find({}, {"item_id": 1, "item_name": 1, 'introduction': 1, 'item_price': 1, 'src': 1,
+                                        "_id": 0})
+            # info = json.dumps(info,ensure_ascii=False)
+            info = json.dumps(list(info), ensure_ascii=False)
+            print(info)
             return info
         except Exception as e:
             print(e)
             print('mysql jd_comment error')
-            return ''
 
 
 if __name__ == '__main__':
     control = RedisControl()
-    a= control.jd_item(111,10)
-    print(a)
+    a= control.jd_item('redis',1,2)

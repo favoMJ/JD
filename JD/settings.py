@@ -26,7 +26,7 @@ ITEM_PIPELINES = {
      'scrapy_redis.pipelines.RedisPipeline': 400,
 }
 
-# LOG_LEVEL = 'INFO'
+LOG_LEVEL = 'INFO'
 # DEPTH_PRIORITY = 1
 # SCHEDULER_DISK_QUEUE = 'scrapy.squeue.PickleFifoDiskQueue'
 # SCHEDULER_MEMORY_QUEUE = 'scrapy.squeue.FifoMemoryQueue'
