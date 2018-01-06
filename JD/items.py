@@ -50,6 +50,12 @@ class CSDNItem(Item):
 
 
 class Article(Item):
+    title = scrapy.Field()
     keyname = scrapy.Field()
     content = scrapy.Field()
     abstract = scrapy.Field()
+    src = scrapy.Field()
+
+    # 爬虫模块，名字
+    crawled = scrapy.Field()
+    spider = scrapy.Field()

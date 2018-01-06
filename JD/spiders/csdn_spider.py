@@ -43,10 +43,12 @@ class CSDNSpider(RedisSpider):
             title = self.get_list_title(li)
             detail = self.get_detail(li)
             src = self.get_src(li)
+
             item['title'] = title
             item['detail'] = detail
             item['src'] = src
             item['keyname'] = CSDNSpider.keyname
+
             yield item
             yield scrapy.Request(url=src,callback=self.pageparse)
 
@@ -58,14 +60,16 @@ class CSDNSpider(RedisSpider):
     def pageparse(self,response):
         item = Article()
         logging.log(logging.WARNING,response.url)
-        title = response.xpath('//article/h1').extract()
+        title = self.get_article_title(response)
         content = response.xpath("//div[@id='article_content']").extract_first()
         content = remove_tags(content)
         content = re.sub(r'[\n]', '', content)
         abstract = pagecontract.contract(text=content)
+        item['title'] = title
         item['keyname'] = CSDNSpider.keyname
         item['content'] = content
         item['abstract'] = abstract
+        item['src'] = response.url
         yield item
 
 
@@ -86,6 +90,12 @@ class CSDNSpider(RedisSpider):
         li = selector.xpath("dt/a/em/text()|dt/a/text()").extract()
         title = ''.join(li)
         return title
+
+    def get_article_title(self,response):
+        res = response.xpath('//article/h1').extract()
+        if not len(res):
+            res = response.xpath('//main/article/h1').extract()
+        return res
 
 
     def get_src(self,selector):
@@ -113,4 +123,4 @@ class CSDNSpider(RedisSpider):
 
 
 if __name__ == '__main__':
-    cmdline.execute('scrapy crawl csdn_search'.split())
+    cmdline.execute('scrapy runspider csdn_spider.py'.split())
