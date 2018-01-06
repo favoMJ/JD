@@ -38,12 +38,18 @@ class CommentItem(Item):
     spider = scrapy.Field()
 
 
-class CSDN_Item(Item):
-    postdate = scrapy.Field()
+class CSDNItem(Item):
     title = scrapy.Field()
-    content = scrapy.Field()
-    type = scrapy.Field()
+    detail = scrapy.Field()
     keyname = scrapy.Field()
+    src = scrapy.Field()
+
     # 爬虫模块，名字
     crawled = scrapy.Field()
     spider = scrapy.Field()
+
+
+class Article(Item):
+    keyname = scrapy.Field()
+    content = scrapy.Field()
+    abstract = scrapy.Field()

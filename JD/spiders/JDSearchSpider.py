@@ -25,7 +25,6 @@ class JDSearchSpider(RedisSpider):
         'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36',
     }
     #start_urls = ['lpush crawl_jd_search:start_url https://search.jd.com/Search?keyword=spark&page=1']
-
     def parse(self, response):
         pageno = response.url.split('&')[-1].split('=')[1]
         searchkey = response.url.split('?')[1].split('=')[1].split('&')[0]
@@ -35,7 +34,7 @@ class JDSearchSpider(RedisSpider):
         for li in lis:
             title = li.xpath("div/div[@class='p-img']/a/@title").extract_first()
             url = li.xpath("div/div[@class='p-img']/a/@href").extract_first()
-            if url == "":
+            if url is None:
                 continue
             url = self.deal_src(url)
             yield scrapy.Request(url, meta={'searchkey':searchkey}, callback='jd_shop_parse')
@@ -98,7 +97,7 @@ class JDSearchSpider(RedisSpider):
 
     # 解析价格
     def jd_price(self, response):
-        logging.log(logging.WARNING, "price url %s" % response.url)
+        # logging.log(logging.WARNING, "price url %s" % response.url)
         item = response.meta['item']
 
         price_str = response.body
@@ -114,7 +113,7 @@ class JDSearchSpider(RedisSpider):
 
     #解析评论总信息
     def jd_comments_count(self,response):
-        logging.log(logging.WARNING, "comment url %s" % response.url)
+        # logging.log(logging.WARNING, "comment url %s" % response.url)
         if response.status != 200:
             return
         item = response.meta['item']

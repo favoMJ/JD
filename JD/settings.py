@@ -14,6 +14,7 @@ BOT_NAME = 'JD'
 SPIDER_MODULES = ['JD.spiders']
 NEWSPIDER_MODULE = 'JD.spiders'
 
+REDIRECT_ENABLED = True
 DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 SCHEDULER_PERSIST = True
@@ -22,7 +23,7 @@ DOWNLOAD_DELAY = 0
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-     'JD.pipelines.JdPipeline':300,
+     # 'JD.pipelines.JdPipeline':300,
      'scrapy_redis.pipelines.RedisPipeline': 400,
 }
 

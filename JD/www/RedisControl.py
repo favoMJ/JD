@@ -52,9 +52,7 @@ class RedisControl(object):
             jd_product = db['jd_product:' + shopname]
             info = jd_product.find({},{"item_id":1,"item_name" :1, 'introduction' : 1 , 'item_price': 1 , 'src' : 1 , "_id":0}).limit(pagesize).skip(startno)
             # info = json.dumps(info,ensure_ascii=False)
-            print(info.count())
             info = json.dumps(list(info),ensure_ascii=False)
-            print(info)
             return info
         except Exception as e:
             print(e)
@@ -68,7 +66,6 @@ class RedisControl(object):
                                         "_id": 0})
             # info = json.dumps(info,ensure_ascii=False)
             info = json.dumps(list(info), ensure_ascii=False)
-            print(info)
             return info
         except Exception as e:
             print(e)
