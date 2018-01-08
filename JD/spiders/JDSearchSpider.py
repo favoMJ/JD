@@ -78,9 +78,8 @@ class JDSearchSpider(RedisSpider):
             body = response.body
             bjson = json.loads(body.decode('gbk'))
             commentsummary = bjson['productCommentSummary']
-            if JDSearchSpider.comment_page == 0:
             #获取总记录数
-                JDSearchSpider.comment_page = int(commentsummary['commentCount'] / JDSearchSpider.comment_pagesize)
+            JDSearchSpider.comment_page = min(int(commentsummary['commentCount'] / JDSearchSpider.comment_pagesize),JDSearchSpider.comment_page)
             for comment in bjson['comments']:
                 citem = CommentItem()
                 citem['keyname'] =  JDSearchSpider.keyname

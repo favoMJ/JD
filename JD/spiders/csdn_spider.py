@@ -8,7 +8,7 @@ from w3lib.html import remove_tags
 
 from JD.conf import config
 from JD.items import CSDNItem, Article
-from JD.package_contract.parse import PageContract
+from JD.package_contract.page_parse import PageContract
 
 pagecontract = PageContract()
 

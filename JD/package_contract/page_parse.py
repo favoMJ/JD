@@ -35,3 +35,16 @@ class PageContract(object):
         for item in tr4s.get_key_sentences(num=3):
             res = res + item.sentence
         return res
+
+    def keywords(self,text):
+        res = []
+
+        # text = codecs.open('01.txt', 'r', 'utf-8').read()
+        tr4w = TextRank4Keyword()
+
+        tr4w.analyze(text=text, lower=True, window=2)  # py2中text必须是utf8编码的str或者unicode对象，py3中必须是utf8编码的bytes或者str对象
+
+        for item in tr4w.get_keywords(30, word_min_len=1):
+            print(item.word,item.weight)
+            res.append(item.word)
+        return res
