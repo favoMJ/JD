@@ -110,8 +110,7 @@ class RedisControl(object):
     def csdn_item(self,shopname,startno,pagesize):
         try:
             csdn_product = db['csdn_product:' + shopname]
-            info = csdn_product.find({}, {"_id": 0}).limit(pagesize).skip(startno)
-            print(info)
+            info = csdn_product.find({}, {"title":1,"detail":1,"src":1,"_id": 0}).limit(pagesize).skip(startno)
             # info = json.dumps(info,ensure_ascii=False)
             info = json.dumps(list(info), ensure_ascii=False)
             return info
@@ -123,9 +122,12 @@ class RedisControl(object):
     def csdn_article(self,shopname,src):
         try:
             jd_product = db['csdn_article:' + shopname]
-            info = jd_product.find({'src':src}, {"_id": 0})
+            info = jd_product.find({'src':src}, {"keyname":0,  "_id": 0})
             # info = json.dumps(info,ensure_ascii=False)
-            info = json.dumps(list(info), ensure_ascii=False)
+            info = list(info)
+            info[0]['content'] = info[0]['content'].replace(u'\r','</br>')
+            info[0]['abstract'] = info[0]['abstract'].replace(u'\r', '</br>')
+            info = json.dumps(info, ensure_ascii=False)
             return info
         except Exception as e:
             print(e)

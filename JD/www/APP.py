@@ -79,6 +79,20 @@ def jd_productsum():
 
 
 '''
+    对于商品的分析
+    shopname 请求中包含页号
+'''
+@app.route('/search/jd/commentkey',methods=['GET'])
+def jd_commentkey():
+    item_id = request.args.get('item_id')
+    shopname = request.args.get('shopname')
+    # 获取页面内容并返回
+    info = redisControl.jd_comment_keywords(shopname,item_id=item_id)
+    # print(info)
+    return info
+
+
+'''
    停止京东商品的爬取
 '''
 @app.route('/search/jd/stop',methods=['GET','POST'])
@@ -123,6 +137,7 @@ def csdn_article():
     src = request.args.get('src')
     # 获取页面内容并返回
     info = redisControl.csdn_article(shopname,src)
+    # print(info)
     return info
 
 

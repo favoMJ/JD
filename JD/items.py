@@ -50,6 +50,10 @@ class CSDNItem(Item):
 
 
 class Article(Item):
+
+    link_postdate = scrapy.Field()
+    link_comments = scrapy.Field()
+    link_view = scrapy.Field()
     title = scrapy.Field()
     keyname = scrapy.Field()
     content = scrapy.Field()

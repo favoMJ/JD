@@ -65,6 +65,11 @@ class CSDNSpider(RedisSpider):
         content = remove_tags(content)
         content = re.sub(r'[\n]', '', content)
         abstract = pagecontract.contract(text=content)
+
+        item['link_postdate'] = self.get_postdate(response)
+
+        item['link_comments'] = self.get_comments(response)
+        item['link_view'] = self.get_view(response)
         item['title'] = title
         item['keyname'] = CSDNSpider.keyname
         item['content'] = content
@@ -82,7 +87,7 @@ class CSDNSpider(RedisSpider):
     def get_name(self,response):
         res = response.xpath('normalize-space(//div[@class="sku-name"])').extract()
         if not len(res[0]):
-            res = response.xpath('normalize-space(//div[@id="name"]/h1)').extract()
+            res = response.xpath('normalize-space(//div[@id="name"]/h1').extract()
         return res
 
 
@@ -92,9 +97,11 @@ class CSDNSpider(RedisSpider):
         return title
 
     def get_article_title(self,response):
-        res = response.xpath('//article/h1').extract()
-        if not len(res):
-            res = response.xpath('//main/article/h1').extract()
+        res = response.xpath('//article/h1/text()').extract_first()
+        if res is None or not len(res):
+            res = response.xpath('//main/article/h1/text()').extract_first()
+        if res is None or not len(res):
+            res = response.xpath("normalize-space(//h1/span/a)").extract_first()
         return res
 
 
@@ -119,6 +126,24 @@ class CSDNSpider(RedisSpider):
 
     def change_pageno(self,url,pageno):
         res = url.replace('page=%s' % (str(pageno)), 'page=%s' % str(int(pageno) + 1))
+        return res
+
+    def get_postdate(self,response):
+        res =  response.xpath("//span[@class='link_postdate']/text()").extract_first()
+        if res is None:
+            res = response.xpath("//span[@class='time']/text()").extract_first()
+        return res
+
+    def get_comments(self,response):
+        res = response.xpath("//span[@class='link_comments']/text()").extract_first()
+        if res is None:
+            return 0
+        return res
+
+    def get_view(self,response):
+        res = response.xpath("//span[@class='link_view']/text()").extract_first()
+        if res is None:
+            res = response.xpath("//button/span[@class='txt']/text()").extract_first()
         return res
 
 
